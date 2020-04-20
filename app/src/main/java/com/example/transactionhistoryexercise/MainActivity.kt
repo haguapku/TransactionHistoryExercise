@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -13,6 +14,7 @@ import androidx.recyclerview.widget.LinearSnapHelper
 import com.example.transactionhistoryexercise.data.model.Atm
 import com.example.transactionhistoryexercise.data.model.TransactionHistoryViewItem
 import com.example.transactionhistoryexercise.databinding.ActivityMainBinding
+import com.example.transactionhistoryexercise.ui.HeaderItemDecoration
 import com.example.transactionhistoryexercise.ui.OnItemClick
 import com.example.transactionhistoryexercise.ui.TransactionHistoryAdapter
 import com.example.transactionhistoryexercise.viewmodel.TransactionHistoryViewModel
@@ -88,14 +90,23 @@ class MainActivity : DaggerAppCompatActivity(), OnItemClick {
 
     private fun setupRecyclerView() {
         history_list.layoutManager = LinearLayoutManager(this)
-        LinearSnapHelper().attachToRecyclerView(history_list)
+//        LinearSnapHelper().attachToRecyclerView(history_list)
         historyAdapter.setOnItemClick(this)
         history_list.adapter = historyAdapter
-        val horizontalDecoration = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            horizontalDecoration.setDrawable(getDrawable(R.drawable.horizontal_divider)!!)
+//        val horizontalDecoration = DividerItemDecoration(this, DividerItemDecoration.VERTICAL)
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//            horizontalDecoration.setDrawable(getDrawable(R.drawable.horizontal_divider)!!)
+//        }
+//        history_list.addItemDecoration(horizontalDecoration)
+        val headerItemDecoration = HeaderItemDecoration(this, DividerItemDecoration.VERTICAL, history_list) {itemPosition ->
+            if (itemPosition >= 0 && itemPosition < historyAdapter.itemCount) {
+                (history_list.adapter as TransactionHistoryAdapter).getItemViewType(itemPosition) == TransactionHistoryAdapter.TYPE_HEADER
+            } else false
         }
-        history_list.addItemDecoration(horizontalDecoration)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            headerItemDecoration.setDrawable(ContextCompat.getDrawable(this, R.drawable.horizontal_divider)!!)
+        }
+        history_list.addItemDecoration(headerItemDecoration)
     }
 
     override fun onResume() {

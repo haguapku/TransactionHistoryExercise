@@ -44,12 +44,15 @@ class TransactionHistoryAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
         when (holder) {
-            is HistoryItemViewHolder -> holder.itemTransactionHistoryBinding.transaction =
-                (histories[position] as TransactionHistoryViewItem.Transaction)
-            is PendingItemViewHolder -> holder.itemPendingHistoryBinding.pending =
-                (histories[position] as TransactionHistoryViewItem.PendingTransaction)
-            is HistorySectionViewHolder -> holder.sectionTransactionHistoryBinding.header =
-                (histories[position] as TransactionHistoryViewItem.Header)
+//            is HistoryItemViewHolder -> holder.itemTransactionHistoryBinding.transaction =
+//                (histories[position] as TransactionHistoryViewItem.Transaction)
+//            is PendingItemViewHolder -> holder.itemPendingHistoryBinding.pending =
+//                (histories[position] as TransactionHistoryViewItem.PendingTransaction)
+//            is HistorySectionViewHolder -> holder.sectionTransactionHistoryBinding.header =
+//                (histories[position] as TransactionHistoryViewItem.Header)
+            is HistoryItemViewHolder -> holder.bind(histories[position] as TransactionHistoryViewItem.Transaction)
+            is PendingItemViewHolder -> holder.bind(histories[position] as TransactionHistoryViewItem.PendingTransaction)
+            is HistorySectionViewHolder -> holder.bind(histories[position] as TransactionHistoryViewItem.Header)
         }
     }
 
