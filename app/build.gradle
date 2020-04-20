@@ -1,0 +1,114 @@
+apply plugin: 'com.android.application'
+
+apply plugin: 'kotlin-android'
+
+apply plugin: 'kotlin-android-extensions'
+
+apply plugin: 'kotlin-kapt'
+
+android {
+    compileSdkVersion 29
+    buildToolsVersion "29.0.2"
+    defaultConfig {
+        applicationId "com.example.transactionhistoryexercise"
+        minSdkVersion 15
+        targetSdkVersion 29
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    dataBinding {
+        enabled = true
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation"org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "androidx.appcompat:appcompat:$appcompatVersion"
+    implementation "androidx.constraintlayout:constraintlayout:$constraintlayoutVersion"
+    implementation "com.google.android.gms:play-services-maps:$playServiceVersion"
+    implementation "com.google.android.gms:play-services-location:$playServiceVersion"
+
+    implementation "com.android.support:multidex:1.0.3"
+
+    // Coroutine
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutineVersion"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutineVersion"
+
+    // Support Material Design
+    implementation "com.google.android.material:material:$materialDesignVersion"
+
+    // SwipeRefreshLayout
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:$swipeRefreshLayout"
+
+    // RecyclerView
+    implementation "androidx.recyclerview:recyclerview:$recycleviewVersion"
+
+    // Architecture components: ViewModel and LiveData
+    implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$androidLifecycleVersion"
+    implementation "androidx.lifecycle:lifecycle-extensions:$androidLifecycleVersion"
+    testImplementation "androidx.arch.core:core-testing:$archCoreTestVersion"
+
+    // Retrofit2 & okhttp3
+    implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
+    implementation "com.squareup.retrofit2:converter-gson:$gsonConverterVersion"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:$rxjava2AdapterVersion"
+    implementation "com.squareup.okhttp3:okhttp:$okhttpVersion"
+    testImplementation "com.squareup.okhttp3:mockwebserver:$okhttpMockWebServerVersion"
+
+    //Moshi json parser
+    implementation 'com.squareup.moshi:moshi:1.8.0'
+    kapt 'com.squareup.moshi:moshi-kotlin-codegen:1.8.0'
+
+    // Dagger
+    implementation "com.google.dagger:dagger:$daggerVersion"
+    kapt "com.google.dagger:dagger-compiler:$daggerVersion"
+    // Dagger android
+    implementation "com.google.dagger:dagger-android:$daggerVersion"
+    implementation "com.google.dagger:dagger-android-support:$daggerVersion"
+    kapt "com.google.dagger:dagger-android-processor:$daggerVersion"
+
+    // Joda time
+    implementation 'joda-time:joda-time:2.10.5'
+
+    //Timber log tool
+    implementation "com.jakewharton.timber:timber:$timberVersion"
+
+    // JUnit 4 framework
+    testImplementation "junit:junit:$junitVersion"
+    // Robolectric environment
+    testImplementation "androidx.test:core:$robolectricVersion"
+    // Mockito framework
+    testImplementation "org.mockito:mockito-core:$mockitoCoreVersion"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutineVersion"
+
+    androidTestImplementation "androidx.test:runner:$androidTestVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$espressoVersion"
+}
+
+android.applicationVariants.all { variant ->
+    def apkName = 'cba_exercise'
+    def flavorName = variant.flavorName
+    apkName += "-v" + android.defaultConfig.versionName + "-Build-" + android.defaultConfig.versionCode + "-" + flavorName
+    if (!variant.buildType.zipAlignEnabled) {
+        apkName += "-unaligned"
+    }
+    if (variant.buildType.name == "release") {
+        apkName += "-RELEASE.apk"
+    } else {
+        apkName += "-DEBUG.apk"
+    }
+
+    variant.outputs.all {
+        outputFileName = apkName
+    }
+}

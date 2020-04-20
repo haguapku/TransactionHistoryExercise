@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Exercise</string>
+    <string name="available_funds">Available funds</string>
+    <string name="account_balance">Account balance</string>
+    <string name="pending">PENDING:</string>
+    <string name="account_details">Account details</string>
+    <string name="now">now</string>
+    <string name="days_ago">%1$d days ago</string>
+    <string name="ddMMyyy_format">dd/MM/yyyy</string>
+    <string name="find_us">Find us</string>
+</resources>

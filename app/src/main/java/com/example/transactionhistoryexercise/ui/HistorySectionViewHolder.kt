@@ -1,0 +1,7 @@
+package com.example.transactionhistoryexercise.ui
+
+import androidx.recyclerview.widget.RecyclerView
+import com.example.transactionhistoryexercise.databinding.SectionTransactionHistoryBinding
+
+class HistorySectionViewHolder(val sectionTransactionHistoryBinding: SectionTransactionHistoryBinding)
+    : RecyclerView.ViewHolder(sectionTransactionHistoryBinding.root)
