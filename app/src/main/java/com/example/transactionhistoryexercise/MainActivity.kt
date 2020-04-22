@@ -76,14 +76,18 @@ class MainActivity : DaggerAppCompatActivity(), OnItemClick {
                 binding.account = it.account
                 historyAdapter.resetData()
                 prepareMultiRecordTypeAdapter(it.transactions, it.pending, historyAdapter)
-                swipeRefreshLayout.isRefreshing = false
+                swipeRefreshLayout.post{
+                    swipeRefreshLayout.isRefreshing = false
+                }
             }
         })
         historyViewModel.snackBar.observe(this, Observer { text ->
             text?.let {
                 Snackbar.make(rootLayout, it, Snackbar.LENGTH_SHORT).show()
                 historyViewModel.onSnackBarShown()
-                swipeRefreshLayout.isRefreshing = false
+                swipeRefreshLayout.post{
+                    swipeRefreshLayout.isRefreshing = false
+                }
             }
         })
     }
