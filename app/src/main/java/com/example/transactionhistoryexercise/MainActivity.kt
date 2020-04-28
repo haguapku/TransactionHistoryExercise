@@ -3,6 +3,7 @@ package com.example.transactionhistoryexercise
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -10,12 +11,12 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.LinearSnapHelper
 import com.example.transactionhistoryexercise.data.model.Atm
 import com.example.transactionhistoryexercise.data.model.TransactionHistoryViewItem
 import com.example.transactionhistoryexercise.databinding.ActivityMainBinding
 import com.example.transactionhistoryexercise.ui.HeaderItemDecoration
 import com.example.transactionhistoryexercise.ui.OnItemClick
+import com.example.transactionhistoryexercise.widget.OnRefreshListener
 import com.example.transactionhistoryexercise.ui.TransactionHistoryAdapter
 import com.example.transactionhistoryexercise.viewmodel.TransactionHistoryViewModel
 import com.example.transactionhistoryexercise.viewmodel.TransactionHistoryViewModelFactory
@@ -62,9 +63,9 @@ class MainActivity : DaggerAppCompatActivity(), OnItemClick {
         setupViewModel(binding)
 
         // Setup pull down refreshing
-        swipeRefreshLayout.setOnRefreshListener {
-            historyViewModel.getTransactionHistory()
-        }
+//        swipeRefreshLayout.setOnRefreshListener {
+//            historyViewModel.getTransactionHistory()
+//        }
     }
 
     private fun setupViewModel(binding: ActivityMainBinding) {
@@ -72,22 +73,24 @@ class MainActivity : DaggerAppCompatActivity(), OnItemClick {
             ViewModelProvider(this, factory).get(TransactionHistoryViewModel::class.java)
         historyViewModel.getHistoryLiveData().observe(this, Observer { it ->
             it?.let {
+
                 atmList = it.atms
                 binding.account = it.account
                 historyAdapter.resetData()
                 prepareMultiRecordTypeAdapter(it.transactions, it.pending, historyAdapter)
-                swipeRefreshLayout.post{
-                    swipeRefreshLayout.isRefreshing = false
-                }
+//                swipeRefreshLayout.post{
+//                    swipeRefreshLayout.isRefreshing = false
+//                }
+                history_list.refreshComplete()
             }
         })
         historyViewModel.snackBar.observe(this, Observer { text ->
             text?.let {
                 Snackbar.make(rootLayout, it, Snackbar.LENGTH_SHORT).show()
                 historyViewModel.onSnackBarShown()
-                swipeRefreshLayout.post{
-                    swipeRefreshLayout.isRefreshing = false
-                }
+//                swipeRefreshLayout.post{
+//                    swipeRefreshLayout.isRefreshing = false
+//                }
             }
         })
     }
@@ -111,11 +114,31 @@ class MainActivity : DaggerAppCompatActivity(), OnItemClick {
             headerItemDecoration.setDrawable(ContextCompat.getDrawable(this, R.drawable.horizontal_divider)!!)
         }
         history_list.addItemDecoration(headerItemDecoration)
+
+        history_list.setOnRefreshListener(object : OnRefreshListener {
+            override fun onRefresh() {
+                historyViewModel.getTransactionHistory()
+            }
+
+            override fun onRefreshTimeout() {
+                Handler().removeCallbacksAndMessages(null)
+            }
+
+            override fun onLoadMore() {
+                Thread.sleep(1000)
+                history_list.loadMoreComplete()
+                history_list.setNoMore(true)
+            }
+
+            override fun onLoreMoreTimeout() {
+                Handler().removeCallbacksAndMessages(null)
+            }
+        })
     }
 
     override fun onResume() {
         super.onResume()
-        swipeRefreshLayout.post { swipeRefreshLayout.isRefreshing = true }
+//        swipeRefreshLayout.post { swipeRefreshLayout.isRefreshing = true }
         historyViewModel.getTransactionHistory()
     }
 
@@ -203,9 +226,9 @@ class MainActivity : DaggerAppCompatActivity(), OnItemClick {
 
     // Start the activity for ATM location display
     override fun onItemClick(view: View, position: Int) {
-        when (historyAdapter.histories[position]) {
+        when (historyAdapter.histories[position - 1]) {
             is TransactionHistoryViewItem.Transaction -> {
-                val description = (historyAdapter.histories[position] as TransactionHistoryViewItem.Transaction).description
+                val description = (historyAdapter.histories[position - 1] as TransactionHistoryViewItem.Transaction).description
                 for (atm in atmList) {
                     if (description.toLowerCase(Locale.ROOT).contains(atm.name.toLowerCase(Locale.ROOT))) {
                         Timber.i(description)

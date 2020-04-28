@@ -63,7 +63,7 @@ class HeaderItemDecoration(
             parent.paddingTop.toFloat() /*+ (currentHeader?.second?.itemView?.height ?: 0 )*/
         ) ?: return
         val topChildPosition = parent.getChildAdapterPosition(topChild)
-        if (topChildPosition == RecyclerView.NO_POSITION) {
+        if (topChildPosition == RecyclerView.NO_POSITION || topChildPosition == 0) {
             return
         }
 
@@ -72,7 +72,7 @@ class HeaderItemDecoration(
         val contactPoint = headerView.bottom + parent.paddingTop
         val childInContact = getChildInContact(parent, contactPoint) ?: return
 
-        if (isHeader(parent.getChildAdapterPosition(childInContact))) {
+        if (isHeader(parent.getChildAdapterPosition(childInContact)-1)) {
             moveHeader(c, headerView, childInContact, parent.paddingTop)
             return
         }
@@ -84,7 +84,7 @@ class HeaderItemDecoration(
         if (parent.adapter == null) {
             return null
         }
-        val headerPosition = getHeaderPositionForItem(itemPosition)
+        val headerPosition = getHeaderPositionForItem(itemPosition-1)
         if (headerPosition == RecyclerView.NO_POSITION) return null
         val headerType = parent.adapter?.getItemViewType(headerPosition) ?: return null
         // if match reuse viewHolder

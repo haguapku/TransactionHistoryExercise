@@ -8,4 +8,12 @@
     <string name="days_ago">%1$d days ago</string>
     <string name="ddMMyyy_format">dd/MM/yyyy</string>
     <string name="find_us">Find us</string>
+    <string name="PullToRefresh_Header_Hint_Normal">Pull To Refresh</string>
+    <string name="PullToRefresh_Header_Hint_Release">Release To Refresh</string>
+    <string name="PullToRefresh_Header_Hint_Refreshing">Refreshing</string>
+    <string name="PullToRefresh_Header_Hint_Complete">Complete</string>
+    <string name="PullUpToLoadMore_Footer_Hint_Normal">Pull Up To Load More</string>
+    <string name="PullUpToLoadMore_Footer_Hint_Loading">Loading</string>
+    <string name="PullUpToLoadMore_Footer_Hint_Complete">Complete</string>
+    <string name="PullUpToLoadMore_Footer_Hint_No_More">No More</string>
 </resources>
