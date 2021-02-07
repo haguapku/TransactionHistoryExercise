@@ -73,6 +73,7 @@ class MainActivity : DaggerAppCompatActivity(), OnItemClick {
             ViewModelProvider(this, factory).get(TransactionHistoryViewModel::class.java)
 
         historyViewModel.getArrangedHistoryLiveData().observe(this, Observer {it ->
+            historyAdapter.resetData()
             prepareMultiRecordTypeAdapter(it, historyAdapter)
             history_list.refreshComplete()
         })
