@@ -71,18 +71,16 @@ class MainActivity : DaggerAppCompatActivity(), OnItemClick {
     private fun setupViewModel(binding: ActivityMainBinding) {
         historyViewModel =
             ViewModelProvider(this, factory).get(TransactionHistoryViewModel::class.java)
-        historyViewModel.getHistoryLiveData().observe(this, Observer { it ->
-            it?.let {
 
-                atmList = it.atms
-                binding.account = it.account
-                historyAdapter.resetData()
-                prepareMultiRecordTypeAdapter(it.transactions, it.pending, historyAdapter)
-//                swipeRefreshLayout.post{
-//                    swipeRefreshLayout.isRefreshing = false
-//                }
-                history_list.refreshComplete()
-            }
+        historyViewModel.getArrangedHistoryLiveData().observe(this, Observer {it ->
+            prepareMultiRecordTypeAdapter(it, historyAdapter)
+            history_list.refreshComplete()
+        })
+        historyViewModel.getAtmListLivaData().observe(this, Observer {
+            atmList = it
+        })
+        historyViewModel.getAccountLivaData().observe(this, Observer {
+            binding.account = it
         })
         historyViewModel.snackBar.observe(this, Observer { text ->
             text?.let {
@@ -144,11 +142,9 @@ class MainActivity : DaggerAppCompatActivity(), OnItemClick {
 
     // Generate adapter for recyclerView to display
     private fun prepareMultiRecordTypeAdapter(
-        transactions: List<TransactionHistoryViewItem.Transaction>,
-        pendingTransactions: List<TransactionHistoryViewItem.PendingTransaction>,
+        dateToTransactionHistoryItems: LinkedHashMap<String, MutableList<TransactionHistoryViewItem>>,
         adapter: TransactionHistoryAdapter) {
 
-        val dateToTransactionHistoryItems = arrangeTransactionHistoryIntoSections(transactions, pendingTransactions)
         for (key in dateToTransactionHistoryItems.keys) {
             val header = TransactionHistoryViewItem.Header(key)
             if (!adapter.headers.contains(key)) {
@@ -158,70 +154,6 @@ class MainActivity : DaggerAppCompatActivity(), OnItemClick {
             adapter.histories.addAll(dateToTransactionHistoryItems[key] as List<TransactionHistoryViewItem>)
         }
         adapter.notifyDataSetChanged()
-    }
-
-    // Arrange the combined list into sections
-    private fun arrangeTransactionHistoryIntoSections(
-        transactions: List<TransactionHistoryViewItem.Transaction>,
-        pendingTransactions: List<TransactionHistoryViewItem.PendingTransaction>)
-            : LinkedHashMap<String, MutableList<TransactionHistoryViewItem>> {
-        val combineList = combineTransactionAndPendingList(transactions, pendingTransactions)
-        val dateToTransactionHistoryItems = LinkedHashMap<String, MutableList<TransactionHistoryViewItem>>()
-
-        for (item in combineList) {
-            val key = when (item) {
-                is TransactionHistoryViewItem.Transaction -> item.effectiveDate
-                is TransactionHistoryViewItem.PendingTransaction -> item.effectiveDate
-                else -> null
-            }
-            if (!dateToTransactionHistoryItems.containsKey(key)) {
-                dateToTransactionHistoryItems[key!!] = ArrayList()
-            }
-            dateToTransactionHistoryItems[key]?.add(item)
-        }
-        return dateToTransactionHistoryItems
-    }
-
-    // Combine transaction list and pending list into one list by date
-    private fun combineTransactionAndPendingList(
-        transactions: List<TransactionHistoryViewItem.Transaction>,
-        pendingTransactions: List<TransactionHistoryViewItem.PendingTransaction>)
-            : List<TransactionHistoryViewItem>{
-        val combineList = ArrayList<TransactionHistoryViewItem>(transactions.size + pendingTransactions.size)
-        var dequeTransaction = ArrayDeque<TransactionHistoryViewItem>(transactions)
-        var dequePending = ArrayDeque<TransactionHistoryViewItem>(pendingTransactions)
-
-        val dateTimeFormatter = DateTimeFormat.forPattern(getString(R.string.ddMMyyy_format))
-
-        while (!dequeTransaction.isEmpty() && !dequePending.isEmpty()) {
-            var temp = dequeTransaction.peek()
-            val x = when(temp) {
-                is TransactionHistoryViewItem.Transaction -> temp.effectiveDate
-                is TransactionHistoryViewItem.PendingTransaction -> temp.effectiveDate
-                else -> null
-            }
-            temp = dequePending.peek()
-            val y = when(temp) {
-                is TransactionHistoryViewItem.Transaction -> temp.effectiveDate
-                is TransactionHistoryViewItem.PendingTransaction -> temp.effectiveDate
-                else -> null
-            }
-            val transactionDate = dateTimeFormatter.parseDateTime(x!!)
-            val pendingDate = dateTimeFormatter.parseDateTime(y!!)
-            if (transactionDate!! > pendingDate!!) {
-                combineList.add(dequeTransaction.poll()!!)
-            } else {
-                combineList.add(dequePending.poll()!!)
-                val deque = dequeTransaction
-                dequeTransaction = dequePending
-                dequePending = deque
-            }
-        }
-
-        combineList.addAll(dequeTransaction)
-        combineList.addAll(dequePending)
-
-        return combineList
     }
 
     // Start the activity for ATM location display
