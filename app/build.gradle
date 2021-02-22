@@ -32,10 +32,12 @@ android {
         enabled = true
     }
 
+    flavorDimensions "1.0"
     productFlavors {
 
         dev {
-
+            dimension "1.0"
+            applicationId = "com.example.transactionhistoryexercise.dev"
         }
     }
 }
