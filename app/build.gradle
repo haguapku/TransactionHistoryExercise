@@ -1,10 +1,20 @@
 apply plugin: 'com.android.application'
-
 apply plugin: 'kotlin-android'
-
 apply plugin: 'kotlin-android-extensions'
-
 apply plugin: 'kotlin-kapt'
+
+// Set the versionName and versionCode from version.properties file
+file("version.properties").withReader {reader ->
+    println '[ INFO ] Loading Application version information ......'
+
+    def versionProperties = new Properties()
+    versionProperties.load(reader)
+    android.defaultConfig.versionName = versionProperties.get("VERSION")
+    android.defaultConfig.versionCode = versionProperties.get("BUILD")
+
+    println '[ INFO ] Version Name: ' + android.defaultConfig.versionName
+    println '[ INFO ] Version Code: ' + android.defaultConfig.versionCode
+}
 
 android {
     compileSdkVersion 29
@@ -13,8 +23,6 @@ android {
         applicationId "com.example.transactionhistoryexercise"
         minSdkVersion 15
         targetSdkVersion 29
-        versionCode 1
-        versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }
