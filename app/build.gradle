@@ -40,6 +40,10 @@ android {
             applicationId = "com.example.transactionhistoryexercise.dev"
         }
     }
+
+    lintOptions {
+        abortOnError false
+    }
 }
 
 dependencies {
