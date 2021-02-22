@@ -10,7 +10,7 @@ file("version.properties").withReader {reader ->
     def versionProperties = new Properties()
     versionProperties.load(reader)
     android.defaultConfig.versionName = versionProperties.get("VERSION")
-    android.defaultConfig.versionCode = versionProperties.get("BUILD")
+    android.defaultConfig.versionCode = Integer.valueOf(versionProperties.get("BUILD"))
 
     println '[ INFO ] Version Name: ' + android.defaultConfig.versionName
     println '[ INFO ] Version Code: ' + android.defaultConfig.versionCode
