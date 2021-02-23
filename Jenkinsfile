@@ -4,17 +4,13 @@ try {
     node {
         
         stage('Clean Build') {
-                dir("android") {
-                    sh "pwd"
-                    sh 'ls -al'
-                    sh './gradlew clean'
-                }   
+                sh './gradlew clean'
         }
         
         stage('Build release ') {
-                dir("android") {
+
                     sh './gradlew assembleDevDebug'
-                }
+
         }
       
         stage('Compile') {
