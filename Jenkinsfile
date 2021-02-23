@@ -1,5 +1,7 @@
 pipeline {
+    agent any
 
+    stages {
         stage('Clean Build') {
               steps {
                   sh 'gradle clean'
@@ -15,4 +17,5 @@ pipeline {
         stage('Compile') {
             archiveArtifacts artifacts: '**/*.apk', fingerprint: true, onlyIfSuccessful: true            
         }
+    }
 }
