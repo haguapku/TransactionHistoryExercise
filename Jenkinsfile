@@ -15,7 +15,9 @@ pipeline {
             }
       
         stage('Compile') {
-            archiveArtifacts artifacts: '**/*.apk', fingerprint: true, onlyIfSuccessful: true            
+            steps {
+                  archiveArtifacts artifacts: '**/*.apk', fingerprint: true, onlyIfSuccessful: true
+            }
         }
     }
 }
