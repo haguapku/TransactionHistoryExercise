@@ -46,7 +46,7 @@ pipeline {
                   echo 'Running Tests'
                        script {
                             VARIANT = getBuildType()
-                            sh "./gradlew test${VARIANT}UnitTest"
+                            sh "./gradlew testDev${VARIANT}UnitTest"
                        }
               }
         }
