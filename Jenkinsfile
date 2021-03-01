@@ -72,4 +72,6 @@ pipeline {
             archiveArtifacts artifacts: '**/*.apk', fingerprint: true, onlyIfSuccessful: true
           }
         }
+
+    }
 }
