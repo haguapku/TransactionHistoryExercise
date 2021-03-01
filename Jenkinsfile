@@ -59,7 +59,7 @@ pipeline {
             sh './gradlew testDevDebugUnitTest'
 
             // Analyse the test results and update the build result as appropriate
-            junit '**/TEST-*.xml'
+            // junit '**/TEST-*.xml'
           }
         }
 
@@ -72,13 +72,4 @@ pipeline {
             archiveArtifacts artifacts: '**/*.apk', fingerprint: true, onlyIfSuccessful: true
           }
         }
-
-    stage('Static analysis') {
-              steps {
-                // Run Lint and analyse the results
-                sh './gradlew lintDebug'
-                androidLint pattern: '**/lint-results-*.xml'
-              }
-            }
-    }
 }
