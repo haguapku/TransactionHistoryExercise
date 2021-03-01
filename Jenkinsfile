@@ -74,11 +74,9 @@ pipeline {
         }
 
     stage('Publish') {
-          environment {
-            APPCENTER_API_TOKEN = credentials('4f2efe286fa4b987d0bbf8abf9b8e9a167ef5f39')
-          }
+
           steps {
-            appCenter apiToken: APPCENTER_API_TOKEN,
+            appCenter apiToken: 'b69c74ec4d2a76f8b40c3fb9a827fd977522767e',
                     ownerName: 'mark.yang-mintpayments.com',
                     appName: 'Test',
                     pathToApp: '**/*-dev-DEBUG.apk',
