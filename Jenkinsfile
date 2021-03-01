@@ -34,38 +34,50 @@ def isDeployCandidate() {
 pipeline {
     agent any
 
-    stages {
-        stage('Clean Build') {
-              steps {
-                  sh './gradlew clean'
-              }
-        }
-
-        stage('Run Tests') {
-              steps {
-              //branch name from Jenkins environment variables
-                echo "My branch is: ${env.BRANCH_NAME}"
-
-                def flavor = flavor(env.BRANCH_NAME)
-                echo "Building flavor ${flavor}"
-                  echo 'Running Tests'
-                       script {
-                            VARIANT = getBuildType()
-                            sh "./gradlew testDev${VARIANT}UnitTest"
-                       }
-              }
-        }
-        
-        stage('Build Debug') {
-              steps {
-                  sh './gradlew assembleDebug'
-              }
-            }
-      
-        stage('Compile') {
-            steps {
-                  archiveArtifacts artifacts: '**/*.apk', fingerprint: true, onlyIfSuccessful: true
-            }
-        }
+    options {
+        // Stop the build early in case of compile or test failures
+        skipStagesAfterUnstable()
     }
+
+    stages {
+            stage('Clean Build') {
+                  steps {
+                      sh './gradlew clean'
+                  }
+            }
+
+    stage('Compile') {
+          steps {
+            // Compile the app and its dependencies
+            sh './gradlew compileDevDebugSources'
+          }
+        }
+
+    stage('Unit test') {
+          steps {
+            // Compile and run the unit tests for the app and its dependencies
+            sh './gradlew testDevDebugUnitTest'
+
+            // Analyse the test results and update the build result as appropriate
+            junit '**/TEST-*.xml'
+          }
+        }
+
+    stage('Build APK') {
+          steps {
+            // Finish building and packaging the APK
+            sh './gradlew assembleDebug'
+
+            // Archive the APKs so that they can be downloaded from Jenkins
+            archiveArtifacts artifacts: '**/*.apk', fingerprint: true, onlyIfSuccessful: true
+          }
+        }
+
+    stage('Static analysis') {
+              steps {
+                // Run Lint and analyse the results
+                sh './gradlew lintDebug'
+                androidLint pattern: '**/lint-results-*.xml'
+              }
+            }
 }
